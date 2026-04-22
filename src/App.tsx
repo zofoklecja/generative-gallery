@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
-import { createNoise2D } from "simplex-noise";
 
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 600;
+
+type Particle = { x: number; y: number };
 
 function App() {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -14,10 +15,15 @@ function App() {
 		const canvas = canvasRef.current;
 		const canvasCtx = canvas.getContext("2d");
 
-		const noise = createNoise2D();
+		let particles: Array<Particle> = [];
+		for (let o = 0; o < 1000; o++) {
+			particles.push({
+				x: Math.random() * CANVAS_WIDTH,
+				y: Math.random() * CANVAS_HEIGHT,
+			});
+		}
 
 		let drawRequestId: number = 0;
-		let offset: number = 0;
 		const draw = () => {
 			if (!canvasCtx) {
 				cancelAnimationFrame(drawRequestId);
@@ -30,26 +36,9 @@ function App() {
 			canvasCtx.fillStyle = "black";
 			canvasCtx.strokeStyle = "purple";
 
-			const STEP = 20;
-			const NOISE_SCALE = 0.005;
-			const SEGMENT_LENGTH = 10;
-			for (let i = STEP; i < CANVAS_WIDTH; i += STEP) {
-				for (let j = STEP; j < CANVAS_HEIGHT; j += STEP) {
-					canvasCtx.beginPath();
-					canvasCtx.moveTo(i, j);
-					const angle: number =
-						(noise(i * NOISE_SCALE, j * NOISE_SCALE) + offset) *
-						Math.PI *
-						2;
-					canvasCtx.lineTo(
-						i + Math.cos(angle) * SEGMENT_LENGTH,
-						j + Math.sin(angle) * SEGMENT_LENGTH,
-					);
-					canvasCtx.stroke();
-				}
-			}
-
-			offset += 0.01;
+			particles.forEach(({ x, y }) => {
+				canvasCtx.fillRect(x, y, 1, 1);
+			});
 		};
 
 		draw();
