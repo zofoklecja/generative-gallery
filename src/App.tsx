@@ -23,10 +23,15 @@ function App() {
 			drawRequestId = requestAnimationFrame(draw);
 
 			canvasCtx.fillStyle = "black";
+			canvasCtx.strokeStyle = "purple";
 
-			for (let i = 10; i < CANVAS_WIDTH; i += 10) {
-				for (let j = 10; j < CANVAS_HEIGHT; j += 10) {
-					canvasCtx.fillRect(i, j, 1, 1);
+			const STEP = 20;
+			for (let i = STEP; i < CANVAS_WIDTH; i += STEP) {
+				for (let j = STEP; j < CANVAS_HEIGHT; j += STEP) {
+					canvasCtx.beginPath();
+					canvasCtx.moveTo(i, j);
+					canvasCtx.lineTo(i + 5, j + 5);
+					canvasCtx.stroke();
 				}
 			}
 		};
