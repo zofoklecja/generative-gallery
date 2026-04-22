@@ -37,7 +37,8 @@ function App() {
 			}
 
 			drawRequestId = requestAnimationFrame(draw);
-			canvasCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+			canvasCtx.fillStyle = "rgba(255, 255, 255, 0.05)";
+			canvasCtx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
 			canvasCtx.fillStyle = "black";
 			canvasCtx.strokeStyle = "purple";
