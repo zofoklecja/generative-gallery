@@ -31,12 +31,16 @@ function App() {
 			canvasCtx.strokeStyle = "purple";
 
 			const STEP = 20;
+			const NOISE_SCALE = 0.005;
 			const SEGMENT_LENGTH = 10;
 			for (let i = STEP; i < CANVAS_WIDTH; i += STEP) {
 				for (let j = STEP; j < CANVAS_HEIGHT; j += STEP) {
 					canvasCtx.beginPath();
 					canvasCtx.moveTo(i, j);
-					const angle: number = (noise(i, j) + offset) * Math.PI * 2;
+					const angle: number =
+						(noise(i * NOISE_SCALE, j * NOISE_SCALE) + offset) *
+						Math.PI *
+						2;
 					canvasCtx.lineTo(
 						i + Math.cos(angle) * SEGMENT_LENGTH,
 						j + Math.sin(angle) * SEGMENT_LENGTH,
