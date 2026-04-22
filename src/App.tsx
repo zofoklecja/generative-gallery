@@ -14,6 +14,7 @@ function App() {
 		const canvasCtx = canvas.getContext("2d");
 
 		let drawRequestId: number = 0;
+		let offset: number = 0;
 		const draw = () => {
 			if (!canvasCtx) {
 				cancelAnimationFrame(drawRequestId);
@@ -21,6 +22,7 @@ function App() {
 			}
 
 			drawRequestId = requestAnimationFrame(draw);
+			canvasCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
 			canvasCtx.fillStyle = "black";
 			canvasCtx.strokeStyle = "purple";
@@ -30,10 +32,16 @@ function App() {
 				for (let j = STEP; j < CANVAS_HEIGHT; j += STEP) {
 					canvasCtx.beginPath();
 					canvasCtx.moveTo(i, j);
-					canvasCtx.lineTo(i + 5, j + 5);
+					const angle = (i / j + offset) * Math.PI * 2;
+					canvasCtx.lineTo(
+						i + Math.cos(angle) * 10,
+						j + Math.sin(angle) * 10,
+					);
 					canvasCtx.stroke();
 				}
 			}
+
+			offset += 0.01;
 		};
 
 		draw();
