@@ -14,8 +14,6 @@ function App() {
 		const canvasCtx = canvas.getContext("2d");
 
 		let drawRequestId: number = 0;
-		let x = 0;
-		let y = 0;
 		const draw = () => {
 			if (!canvasCtx) {
 				cancelAnimationFrame(drawRequestId);
@@ -23,16 +21,13 @@ function App() {
 			}
 
 			drawRequestId = requestAnimationFrame(draw);
-			canvasCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-			canvasCtx.fillStyle = "peru";
-			canvasCtx.fillRect(x, y, 120, 120);
 
-			if (y <= CANVAS_HEIGHT) {
-				x++;
-				y++;
-			} else {
-				x = 0;
-				y = 0;
+			canvasCtx.fillStyle = "black";
+
+			for (let i = 10; i < CANVAS_WIDTH; i += 10) {
+				for (let j = 10; j < CANVAS_HEIGHT; j += 10) {
+					canvasCtx.fillRect(i, j, 1, 1);
+				}
 			}
 		};
 
