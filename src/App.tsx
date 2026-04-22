@@ -14,6 +14,8 @@ function App() {
 		const canvas = canvasRef.current;
 		const canvasCtx = canvas.getContext("2d");
 
+		const noise = createNoise2D();
+
 		let drawRequestId: number = 0;
 		let offset: number = 0;
 		const draw = () => {
@@ -34,7 +36,7 @@ function App() {
 				for (let j = STEP; j < CANVAS_HEIGHT; j += STEP) {
 					canvasCtx.beginPath();
 					canvasCtx.moveTo(i, j);
-					const angle = (i / j + offset) * Math.PI * 2;
+					const angle: number = (noise(i, j) + offset) * Math.PI * 2;
 					canvasCtx.lineTo(
 						i + Math.cos(angle) * SEGMENT_LENGTH,
 						j + Math.sin(angle) * SEGMENT_LENGTH,
