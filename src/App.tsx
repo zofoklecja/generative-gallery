@@ -1,16 +1,39 @@
 import { useEffect, useRef } from "react";
 import { createNoise2D } from "simplex-noise";
+import { useControls } from "leva";
 
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 600;
 
-const VELOCITY = 0.5;
-const NOISE_SCALE = 0.005;
-
 type Particle = { x: number; y: number };
 
 function App() {
+	const { velocity, noiseScale, fade } = useControls({
+		velocity: {
+			value: 0.5,
+			min: 0.1,
+			max: 3,
+			step: 0.1,
+		},
+		noiseScale: {
+			value: 1,
+			min: 1,
+			max: 90,
+			step: 1,
+		},
+		fade: {
+			value: 0.5,
+			min: 0.1,
+			max: 2,
+			step: 0.1,
+		},
+	});
+	const paramsRef = useRef({ velocity, noiseScale, fade });
 	const canvasRef = useRef<HTMLCanvasElement>(null);
+
+	useEffect(() => {
+		paramsRef.current = { velocity, noiseScale, fade };
+	}, [velocity, noiseScale, fade]);
 
 	useEffect(() => {
 		if (!canvasRef.current) {
@@ -34,7 +57,7 @@ function App() {
 			}
 
 			drawRequestId = requestAnimationFrame(draw);
-			canvasCtx.fillStyle = "rgba(255, 255, 255, 0.05)";
+			canvasCtx.fillStyle = `rgba(255, 255, 255, ${paramsRef.current.fade / 10})`;
 			canvasCtx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
 			canvasCtx.fillStyle = "black";
@@ -42,10 +65,17 @@ function App() {
 			particles.forEach(({ x, y }, i) => {
 				canvasCtx.fillRect(x, y, 3, 3);
 				const angle: number =
-					noise(x * NOISE_SCALE, y * NOISE_SCALE) * Math.PI * 2;
+					noise(
+						(x * paramsRef.current.noiseScale) / 1000,
+						(y * paramsRef.current.noiseScale) / 1000,
+					) *
+					Math.PI *
+					2;
 
-				particles[i].x = x + Math.cos(angle) * VELOCITY;
-				particles[i].y = y + Math.sin(angle) * VELOCITY;
+				particles[i].x =
+					x + Math.cos(angle) * paramsRef.current.velocity;
+				particles[i].y =
+					y + Math.sin(angle) * paramsRef.current.velocity;
 
 				if (
 					particles[i].x > CANVAS_WIDTH ||
