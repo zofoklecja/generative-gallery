@@ -4,7 +4,7 @@ import { createNoise2D } from "simplex-noise";
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 600;
 
-const VELOCITY = 1;
+const VELOCITY = 0.5;
 const NOISE_SCALE = 0.005;
 
 type Particle = { x: number; y: number };
@@ -21,15 +21,12 @@ function App() {
 
 		const noise = createNoise2D();
 
-		let particles: Array<Particle> = [];
-		for (let o = 0; o < 500; o++) {
-			particles.push({
-				x: Math.random() * CANVAS_WIDTH,
-				y: Math.random() * CANVAS_HEIGHT,
-			});
-		}
+		const particles = Array.from({ length: 500 }, () => ({
+			x: Math.random() * CANVAS_WIDTH,
+			y: Math.random() * CANVAS_HEIGHT,
+		}));
 
-		let drawRequestId: number = 0;
+		let drawRequestId = 0;
 		const draw = () => {
 			if (!canvasCtx) {
 				cancelAnimationFrame(drawRequestId);
@@ -41,16 +38,14 @@ function App() {
 			canvasCtx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
 			canvasCtx.fillStyle = "black";
-			canvasCtx.strokeStyle = "purple";
 
 			particles.forEach(({ x, y }, i) => {
 				canvasCtx.fillRect(x, y, 3, 3);
 				const angle: number =
 					noise(x * NOISE_SCALE, y * NOISE_SCALE) * Math.PI * 2;
-				particles[i] = {
-					x: x + Math.cos(angle) * VELOCITY,
-					y: y + Math.sin(angle) * VELOCITY,
-				};
+
+				particles[i].x = x + Math.cos(angle) * VELOCITY;
+				particles[i].y = y + Math.sin(angle) * VELOCITY;
 
 				if (
 					particles[i].x > CANVAS_WIDTH ||
@@ -58,10 +53,8 @@ function App() {
 					particles[i].x < 0 ||
 					particles[i].y < 0
 				) {
-					particles[i] = {
-						x: Math.random() * CANVAS_WIDTH,
-						y: Math.random() * CANVAS_HEIGHT,
-					};
+					particles[i].x = Math.random() * CANVAS_WIDTH;
+					particles[i].y = Math.random() * CANVAS_HEIGHT;
 				}
 			});
 		};
