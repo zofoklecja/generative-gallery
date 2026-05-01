@@ -23,12 +23,12 @@ export const interpret = ({
 	input,
 }: {
 	canvasCtx: CanvasRenderingContext2D | null;
-	input: String;
+	input: string;
 }) => {
 	let x = 400;
 	let y = 600;
 	let angle = 0.25;
-	let history: { x: number; y: number; angle: number }[] = [];
+	const history: { x: number; y: number; angle: number }[] = [];
 	if (!canvasCtx) {
 		return;
 	}
