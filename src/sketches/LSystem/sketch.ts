@@ -36,27 +36,28 @@ export const interpret = ({
 			drawRequestId = requestAnimationFrame(start);
 			canvasCtx.beginPath();
 			canvasCtx.moveTo(x, y);
-
-			if (input[idx] === "+") {
-				angle -= ANGLE;
-			} else if (input[idx] === "-") {
-				angle += ANGLE;
-			} else if (input[idx] === "F") {
-				x = x + Math.cos(angle * Math.PI * 2) * STEP;
-				y = y - Math.sin(angle * Math.PI * 2) * STEP;
-				canvasCtx.lineTo(x, y);
-			} else if (input[idx] === "[") {
-				history.push({ x, y, angle });
-			} else if (input[idx] === "]") {
-				const restoredState = history.pop();
-				if (restoredState) {
-					x = restoredState.x;
-					y = restoredState.y;
-					angle = restoredState.angle;
+			for (let i = 0; i < 10; i++) {
+				if (input[idx] === "+") {
+					angle -= ANGLE;
+				} else if (input[idx] === "-") {
+					angle += ANGLE;
+				} else if (input[idx] === "F") {
+					x = x + Math.cos(angle * Math.PI * 2) * STEP;
+					y = y - Math.sin(angle * Math.PI * 2) * STEP;
+					canvasCtx.lineTo(x, y);
+				} else if (input[idx] === "[") {
+					history.push({ x, y, angle });
+				} else if (input[idx] === "]") {
+					const restoredState = history.pop();
+					if (restoredState) {
+						x = restoredState.x;
+						y = restoredState.y;
+						angle = restoredState.angle;
+					}
 				}
+				idx++;
 			}
 			canvasCtx.stroke();
-			idx++;
 		}
 	};
 
