@@ -22,37 +22,43 @@ export const interpret = ({
 	canvasCtx,
 	input,
 }: {
-	canvasCtx: CanvasRenderingContext2D | null;
+	canvasCtx: CanvasRenderingContext2D;
 	input: string;
 }) => {
+	let drawRequestId = 0;
 	let x = 400;
 	let y = 600;
 	let angle = 0.25;
 	const history: { x: number; y: number; angle: number }[] = [];
-	if (!canvasCtx) {
-		return;
-	}
-	canvasCtx.beginPath();
-	canvasCtx.moveTo(x, y);
-	[...input].forEach((el) => {
-		if (el === "+") {
-			angle -= ANGLE;
-		} else if (el === "-") {
-			angle += ANGLE;
-		} else if (el === "F") {
-			x = x + Math.cos(angle * Math.PI * 2) * STEP;
-			y = y - Math.sin(angle * Math.PI * 2) * STEP;
-			canvasCtx.lineTo(x, y);
-		} else if (el === "[") {
-			history.push({ x, y, angle });
-		} else if (el === "]") {
-			const restoredState = history.pop();
-			if (restoredState) {
-				x = restoredState.x;
-				y = restoredState.y;
-				angle = restoredState.angle;
+	let idx = 0;
+	const start = () => {
+		if (idx < input.length) {
+			drawRequestId = requestAnimationFrame(start);
+			canvasCtx.beginPath();
+			canvasCtx.moveTo(x, y);
+
+			if (input[idx] === "+") {
+				angle -= ANGLE;
+			} else if (input[idx] === "-") {
+				angle += ANGLE;
+			} else if (input[idx] === "F") {
+				x = x + Math.cos(angle * Math.PI * 2) * STEP;
+				y = y - Math.sin(angle * Math.PI * 2) * STEP;
+				canvasCtx.lineTo(x, y);
+			} else if (input[idx] === "[") {
+				history.push({ x, y, angle });
+			} else if (input[idx] === "]") {
+				const restoredState = history.pop();
+				if (restoredState) {
+					x = restoredState.x;
+					y = restoredState.y;
+					angle = restoredState.angle;
+				}
 			}
+			canvasCtx.stroke();
+			idx++;
 		}
-	});
-	canvasCtx.stroke();
+	};
+
+	return { start, stop: () => cancelAnimationFrame(drawRequestId) };
 };

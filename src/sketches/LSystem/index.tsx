@@ -15,10 +15,17 @@ function LSystem() {
 			depth: 4,
 		});
 
-		interpret({
+		if (!canvasCtx) {
+			return;
+		}
+		const { start, stop } = interpret({
 			canvasCtx,
 			input: expandedAxiom,
 		});
+
+		start();
+
+		return () => stop();
 	}, []);
 
 	return <canvas ref={canvasRef} height={600} width={800} />;
