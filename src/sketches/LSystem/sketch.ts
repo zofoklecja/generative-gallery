@@ -1,13 +1,19 @@
-type Params = {
+type ExpandParams = {
 	axiom: string;
 	rules: Record<string, string>;
 	depth: number;
 };
+type InterpretParams = {
+	canvasCtx: CanvasRenderingContext2D;
+	input: string;
+};
 
 const STEP = 20;
+const STEPS_PER_FRAME = 10;
 const ANGLE = 0.3;
+const INITIAL_ANGLE = 0.25;
 
-export const expand = ({ axiom, rules, depth }: Params) => {
+export const expand = ({ axiom, rules, depth }: ExpandParams) => {
 	let result = axiom;
 	const applyRules = (input: string) =>
 		[...input].map((char) => rules[char] ?? char).join("");
@@ -18,17 +24,11 @@ export const expand = ({ axiom, rules, depth }: Params) => {
 	return result;
 };
 
-export const interpret = ({
-	canvasCtx,
-	input,
-}: {
-	canvasCtx: CanvasRenderingContext2D;
-	input: string;
-}) => {
+export const interpret = ({ canvasCtx, input }: InterpretParams) => {
 	let drawRequestId = 0;
 	let x = 400;
 	let y = 600;
-	let angle = 0.25;
+	let angle = INITIAL_ANGLE;
 	const history: { x: number; y: number; angle: number }[] = [];
 	let idx = 0;
 	const start = () => {
@@ -36,14 +36,14 @@ export const interpret = ({
 			drawRequestId = requestAnimationFrame(start);
 			canvasCtx.beginPath();
 			canvasCtx.moveTo(x, y);
-			for (let i = 0; i < 10; i++) {
+			for (let i = 0; i < STEPS_PER_FRAME; i++) {
 				if (input[idx] === "+") {
 					angle -= ANGLE;
 				} else if (input[idx] === "-") {
 					angle += ANGLE;
 				} else if (input[idx] === "F") {
-					x = x + Math.cos(angle * Math.PI * 2) * STEP;
-					y = y - Math.sin(angle * Math.PI * 2) * STEP;
+					x += Math.cos(angle * Math.PI * 2) * STEP;
+					y -= Math.sin(angle * Math.PI * 2) * STEP;
 					canvasCtx.lineTo(x, y);
 				} else if (input[idx] === "[") {
 					history.push({ x, y, angle });
