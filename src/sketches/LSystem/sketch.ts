@@ -3,15 +3,18 @@ type ExpandParams = {
 	rules: Record<string, string>;
 	depth: number;
 };
-type InterpretParams = {
-	canvasCtx: CanvasRenderingContext2D;
-	input: string;
+
+type LSystemParams = {
+	step: number;
+	angle: number;
+	initialAngle: number;
 };
 
-const STEP = 20;
-const STEPS_PER_FRAME = 10;
-const ANGLE = 0.3;
-const INITIAL_ANGLE = 0.25;
+type InterpretParams = {
+	canvasCtx: CanvasRenderingContext2D;
+	params: LSystemParams;
+	input: string;
+};
 
 export const expand = ({ axiom, rules, depth }: ExpandParams) => {
 	let result = axiom;
@@ -24,42 +27,33 @@ export const expand = ({ axiom, rules, depth }: ExpandParams) => {
 	return result;
 };
 
-export const interpret = ({ canvasCtx, input }: InterpretParams) => {
-	let drawRequestId = 0;
+export const interpret = ({ canvasCtx, params, input }: InterpretParams) => {
 	let x = 400;
 	let y = 600;
-	let angle = INITIAL_ANGLE;
+	let angle = params.initialAngle;
 	const history: { x: number; y: number; angle: number }[] = [];
-	let idx = 0;
-	const start = () => {
-		if (idx < input.length) {
-			drawRequestId = requestAnimationFrame(start);
-			canvasCtx.beginPath();
-			canvasCtx.moveTo(x, y);
-			for (let i = 0; i < STEPS_PER_FRAME; i++) {
-				if (input[idx] === "+") {
-					angle -= ANGLE;
-				} else if (input[idx] === "-") {
-					angle += ANGLE;
-				} else if (input[idx] === "F") {
-					x += Math.cos(angle * Math.PI * 2) * STEP;
-					y -= Math.sin(angle * Math.PI * 2) * STEP;
-					canvasCtx.lineTo(x, y);
-				} else if (input[idx] === "[") {
-					history.push({ x, y, angle });
-				} else if (input[idx] === "]") {
-					const restoredState = history.pop();
-					if (restoredState) {
-						x = restoredState.x;
-						y = restoredState.y;
-						angle = restoredState.angle;
-					}
-				}
-				idx++;
+	[...input].forEach((el) => {
+		canvasCtx.beginPath();
+		canvasCtx.moveTo(x, y);
+		if (el === "+") {
+			angle -= params.angle;
+		} else if (el === "-") {
+			angle += params.angle;
+		} else if (el === "F") {
+			x += Math.cos(angle * Math.PI * 2) * params.step;
+			y -= Math.sin(angle * Math.PI * 2) * params.step;
+			canvasCtx.lineTo(x, y);
+		} else if (el === "[") {
+			history.push({ x, y, angle });
+		} else if (el === "]") {
+			const restoredState = history.pop();
+			if (restoredState) {
+				x = restoredState.x;
+				y = restoredState.y;
+				angle = restoredState.angle;
 			}
-			canvasCtx.stroke();
 		}
-	};
 
-	return { start, stop: () => cancelAnimationFrame(drawRequestId) };
+		canvasCtx.stroke();
+	});
 };

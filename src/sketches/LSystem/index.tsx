@@ -1,7 +1,28 @@
 import { useEffect, useRef } from "react";
 import { expand, interpret } from "./sketch.ts";
+import { useControls } from "leva";
 
 function LSystem() {
+	const { step, angle, initialAngle } = useControls({
+		step: {
+			value: 10,
+			min: 1,
+			max: 20,
+			step: 1,
+		},
+		angle: {
+			value: 0.3,
+			min: 0.1,
+			max: 1,
+			step: 0.1,
+		},
+		initialAngle: {
+			value: 0.25,
+			min: 0.1,
+			max: 1,
+			step: 0.1,
+		},
+	});
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	useEffect(() => {
@@ -18,17 +39,15 @@ function LSystem() {
 		if (!canvasCtx) {
 			return;
 		}
-		const { start, stop } = interpret({
+		canvasCtx.clearRect(0, 0, 800, 600);
+		interpret({
 			canvasCtx,
+			params: { step, angle, initialAngle },
 			input: expandedAxiom,
 		});
+	}, [step, angle, initialAngle]);
 
-		start();
-
-		return () => stop();
-	}, []);
-
-	return <canvas ref={canvasRef} height={600} width={800} />;
+	return <canvas ref={canvasRef} width={800} height={600} />;
 }
 
 export default LSystem;
