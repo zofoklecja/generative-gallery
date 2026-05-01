@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import expand from "./sketch.ts";
+import { expand, interpret } from "./sketch.ts";
 
 function LSystem() {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -9,11 +9,15 @@ function LSystem() {
 			return;
 		}
 		const canvasCtx = canvasRef.current.getContext("2d");
-		expand({
-			canvasCtx,
+		const expandedAxiom = expand({
 			axiom: "F",
 			rules: { F: "F+F-F-F+F" },
 			depth: 3,
+		});
+
+		interpret({
+			canvasCtx,
+			input: expandedAxiom,
 		});
 	}, []);
 
