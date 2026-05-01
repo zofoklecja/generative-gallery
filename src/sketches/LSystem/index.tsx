@@ -11,8 +11,8 @@ function LSystem() {
 		const canvasCtx = canvasRef.current.getContext("2d");
 		const expandedAxiom = expand({
 			axiom: "F",
-			rules: { F: "F+F-F-F+F" },
-			depth: 3,
+			rules: { F: "FF+[+F-F-F]-[-F+F+F]" },
+			depth: 4,
 		});
 
 		interpret({

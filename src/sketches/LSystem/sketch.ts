@@ -28,6 +28,7 @@ export const interpret = ({
 	let x = 400;
 	let y = 600;
 	let angle = 0.25;
+	let history: { x: number; y: number; angle: number }[] = [];
 	if (!canvasCtx) {
 		return;
 	}
@@ -42,6 +43,15 @@ export const interpret = ({
 			x = x + Math.cos(angle * Math.PI * 2) * STEP;
 			y = y - Math.sin(angle * Math.PI * 2) * STEP;
 			canvasCtx.lineTo(x, y);
+		} else if (el === "[") {
+			history.push({ x, y, angle });
+		} else if (el === "]") {
+			const restoredState = history.pop();
+			if (restoredState) {
+				x = restoredState.x;
+				y = restoredState.y;
+				angle = restoredState.angle;
+			}
 		}
 	});
 	canvasCtx.stroke();
