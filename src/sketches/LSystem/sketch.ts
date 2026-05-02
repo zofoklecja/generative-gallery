@@ -35,17 +35,18 @@ export const interpret = ({ canvasCtx, params, input }: InterpretParams) => {
 	let y = CANVAS_HEIGHT;
 	let angle = INITIAL_ANGLE;
 	const history: { x: number; y: number; angle: number }[] = [];
-	canvasCtx.beginPath();
-	canvasCtx.moveTo(x, y);
 	[...input].forEach((el) => {
 		if (el === "+") {
 			angle -= params.angle;
 		} else if (el === "-") {
 			angle += params.angle;
 		} else if (el === "F") {
+			canvasCtx.beginPath();
+			canvasCtx.moveTo(x, y);
 			x += Math.cos(angle * Math.PI * 2) * params.step;
 			y -= Math.sin(angle * Math.PI * 2) * params.step;
 			canvasCtx.lineTo(x, y);
+			canvasCtx.stroke();
 		} else if (el === "[") {
 			history.push({ x, y, angle });
 		} else if (el === "]") {
@@ -57,5 +58,4 @@ export const interpret = ({ canvasCtx, params, input }: InterpretParams) => {
 			}
 		}
 	});
-	canvasCtx.stroke();
 };
