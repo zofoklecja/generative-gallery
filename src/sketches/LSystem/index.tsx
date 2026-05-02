@@ -11,11 +11,11 @@ const PRESETS = {
 };
 
 function LSystem() {
-	const [{ preset, scale: step, angle, axiom, rules, depth }, set] =
-		useControls(() => ({
+	const [{ preset, scale, angle, axiom, rules, depth }, set] = useControls(
+		() => ({
 			preset: {
-				value: "",
-				options: PRESETS,
+				value: "tree",
+				options: Object.keys(PRESETS),
 			},
 			scale: {
 				value: 10,
@@ -31,19 +31,16 @@ function LSystem() {
 			},
 			axiom: "F",
 			rules: "F:FF+[+F-F-F]",
-			depth: 2,
-		}));
+			depth: 4,
+		}),
+	);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	useEffect(() => {
-		if (typeof preset === "object") {
-			console.log(preset);
-			set({
-				axiom: preset.axiom,
-				rules: preset.rules,
-				depth: preset.depth,
-			});
+		if (preset in PRESETS) {
+			set(PRESETS[preset as keyof typeof PRESETS]);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- set is guaranteed to be constant
 	}, [preset]);
 
 	useEffect(() => {
@@ -60,13 +57,13 @@ function LSystem() {
 		if (!canvasCtx) {
 			return;
 		}
-		canvasCtx.clearRect(0, 0, 800, 600);
+		canvasCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 		interpret({
 			canvasCtx,
-			params: { step, angle },
+			params: { scale, angle },
 			input: expandedAxiom,
 		});
-	}, [step, angle, axiom, rules, depth]);
+	}, [scale, angle, axiom, rules, depth]);
 
 	return (
 		<canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} />

@@ -7,7 +7,7 @@ type ExpandParams = {
 };
 
 type LSystemParams = {
-	step: number;
+	scale: number;
 	angle: number;
 };
 
@@ -43,8 +43,8 @@ export const interpret = ({ canvasCtx, params, input }: InterpretParams) => {
 		} else if (el === "F") {
 			canvasCtx.beginPath();
 			canvasCtx.moveTo(x, y);
-			x += Math.cos(angle * Math.PI * 2) * params.step;
-			y -= Math.sin(angle * Math.PI * 2) * params.step;
+			x += Math.cos(angle * Math.PI * 2) * params.scale;
+			y -= Math.sin(angle * Math.PI * 2) * params.scale;
 			canvasCtx.lineTo(x, y);
 			canvasCtx.stroke();
 		} else if (el === "[") {
