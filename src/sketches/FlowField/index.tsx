@@ -1,9 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useControls } from "leva";
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../constants.ts";
 import draw from "./sketch.ts";
-
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 600;
 
 function FlowField() {
 	const { velocity, noiseScale, fade } = useControls({

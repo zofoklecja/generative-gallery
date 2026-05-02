@@ -1,2 +1,7 @@
-export const parseRules = (rulesString: string) =>
-	Object.fromEntries(rulesString.split(",").map((rule) => rule.split(":")));
+export const parseRules = (rules: string) =>
+	Object.fromEntries(
+		rules
+			.split(",")
+			.map((rule) => rule.split(":"))
+			.filter((keyValue: string[]) => keyValue.length === 2),
+	);

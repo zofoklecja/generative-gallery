@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useControls } from "leva";
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../constants.ts";
 import { expand, interpret } from "./sketch.ts";
 import { parseRules } from "./utils.ts";
 
@@ -45,7 +46,9 @@ function LSystem() {
 		});
 	}, [step, angle, axiom, rules, depth]);
 
-	return <canvas ref={canvasRef} width={800} height={600} />;
+	return (
+		<canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} />
+	);
 }
 
 export default LSystem;

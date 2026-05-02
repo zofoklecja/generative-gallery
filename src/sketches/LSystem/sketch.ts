@@ -1,3 +1,5 @@
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../constants";
+
 type ExpandParams = {
 	axiom: string;
 	rules: Record<string, string>;
@@ -29,13 +31,13 @@ export const expand = ({ axiom, rules, depth }: ExpandParams) => {
 };
 
 export const interpret = ({ canvasCtx, params, input }: InterpretParams) => {
-	let x = 400;
-	let y = 600;
+	let x = CANVAS_WIDTH / 2;
+	let y = CANVAS_HEIGHT;
 	let angle = INITIAL_ANGLE;
 	const history: { x: number; y: number; angle: number }[] = [];
+	canvasCtx.beginPath();
+	canvasCtx.moveTo(x, y);
 	[...input].forEach((el) => {
-		canvasCtx.beginPath();
-		canvasCtx.moveTo(x, y);
 		if (el === "+") {
 			angle -= params.angle;
 		} else if (el === "-") {
@@ -54,7 +56,6 @@ export const interpret = ({ canvasCtx, params, input }: InterpretParams) => {
 				angle = restoredState.angle;
 			}
 		}
-
-		canvasCtx.stroke();
 	});
+	canvasCtx.stroke();
 };
