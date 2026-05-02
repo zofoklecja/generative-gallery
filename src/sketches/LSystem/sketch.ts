@@ -7,7 +7,6 @@ type ExpandParams = {
 type LSystemParams = {
 	step: number;
 	angle: number;
-	initialAngle: number;
 };
 
 type InterpretParams = {
@@ -15,6 +14,8 @@ type InterpretParams = {
 	params: LSystemParams;
 	input: string;
 };
+
+const INITIAL_ANGLE = 0.25;
 
 export const expand = ({ axiom, rules, depth }: ExpandParams) => {
 	let result = axiom;
@@ -30,7 +31,7 @@ export const expand = ({ axiom, rules, depth }: ExpandParams) => {
 export const interpret = ({ canvasCtx, params, input }: InterpretParams) => {
 	let x = 400;
 	let y = 600;
-	let angle = params.initialAngle;
+	let angle = INITIAL_ANGLE;
 	const history: { x: number; y: number; angle: number }[] = [];
 	[...input].forEach((el) => {
 		canvasCtx.beginPath();
