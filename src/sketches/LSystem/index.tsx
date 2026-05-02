@@ -4,25 +4,47 @@ import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../constants.ts";
 import { expand, interpret } from "./sketch.ts";
 import { parseRules } from "./utils.ts";
 
+const PRESETS = {
+	tree: { axiom: "F", rules: "F:FF+[+F-F-F]", depth: 4 },
+	snowflake: { axiom: "F", rules: "F:F+F-F-F+F", depth: 3 },
+	fern: { axiom: "X", rules: "X:F+[[X]-X]-F[-FX]+X,F:FF", depth: 5 },
+};
+
 function LSystem() {
-	const { step, angle, axiom, rules, depth } = useControls({
-		step: {
-			value: 10,
-			min: 1,
-			max: 20,
-			step: 1,
-		},
-		angle: {
-			value: 0.3,
-			min: 0.1,
-			max: 1,
-			step: 0.1,
-		},
-		axiom: "F",
-		rules: "F:FF+[+F-F-F]",
-		depth: 2,
-	});
+	const [{ preset, scale: step, angle, axiom, rules, depth }, set] =
+		useControls(() => ({
+			preset: {
+				value: "",
+				options: PRESETS,
+			},
+			scale: {
+				value: 10,
+				min: 1,
+				max: 20,
+				step: 1,
+			},
+			angle: {
+				value: 0.3,
+				min: 0.1,
+				max: 1,
+				step: 0.1,
+			},
+			axiom: "F",
+			rules: "F:FF+[+F-F-F]",
+			depth: 2,
+		}));
 	const canvasRef = useRef<HTMLCanvasElement>(null);
+
+	useEffect(() => {
+		if (typeof preset === "object") {
+			console.log(preset);
+			set({
+				axiom: preset.axiom,
+				rules: preset.rules,
+				depth: preset.depth,
+			});
+		}
+	}, [preset]);
 
 	useEffect(() => {
 		if (!canvasRef.current) {
