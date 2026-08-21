@@ -1,13 +1,31 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import draw from "./sketch.ts";
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../constants.ts";
 
 function Voronoi() {
+	const paramsRef = useRef({});
+	const canvasRef = useRef<HTMLCanvasElement>(null);
+
 	useEffect(() => {
-		const { start, stop } = draw();
+		if (!canvasRef.current) {
+			return;
+		}
+		const canvasCtx = canvasRef.current.getContext("2d");
+		const { start, stop } = draw({
+			canvasCtx,
+			paramsRef,
+			CANVAS_HEIGHT,
+			CANVAS_WIDTH,
+		});
+
 		start();
 
 		return () => stop();
-	});
+	}, []);
+
+	return (
+		<canvas ref={canvasRef} height={CANVAS_HEIGHT} width={CANVAS_WIDTH} />
+	);
 }
 
 export default Voronoi;
