@@ -1,10 +1,12 @@
 import { useState } from "react";
 import FlowField from "./sketches/FlowField";
 import LSystem from "./sketches/LSystem";
+import VoronoiDiagram from "./sketches/Voronoi";
 
 const SKETCHES = [
 	{ id: "flow-field", label: "Flow Field", component: FlowField },
 	{ id: "l-system", label: "L-System", component: LSystem },
+	{ id: "voronoi", label: "Voronoi", component: VoronoiDiagram },
 ] as const;
 type SketchId = (typeof SKETCHES)[number]["id"];
 
