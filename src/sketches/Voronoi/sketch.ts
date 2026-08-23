@@ -15,6 +15,7 @@ export default ({ canvasCtx, CANVAS_HEIGHT, CANVAS_WIDTH }: Params) => {
 	const particles = Array.from({ length: 20 }, () => ({
 		x: Math.random() * CANVAS_WIDTH,
 		y: Math.random() * CANVAS_HEIGHT,
+		angle: Math.random() * Math.PI * 2,
 		color: {
 			r: Math.floor(Math.random() * MAX_RGB),
 			g: Math.floor(Math.random() * MAX_RGB),
@@ -26,13 +27,11 @@ export default ({ canvasCtx, CANVAS_HEIGHT, CANVAS_WIDTH }: Params) => {
 		return { start: () => {}, stop: () => {} };
 	}
 
+	const imageData = canvasCtx.createImageData(CANVAS_WIDTH, CANVAS_HEIGHT);
+	const data = imageData.data;
+
 	const draw = () => {
 		drawRequestId = requestAnimationFrame(draw);
-		const imageData = canvasCtx.createImageData(
-			CANVAS_WIDTH,
-			CANVAS_HEIGHT,
-		);
-		const data = imageData.data;
 
 		for (let j = 0; j < CANVAS_HEIGHT; j++) {
 			for (let i = 0; i < CANVAS_WIDTH; i++) {
@@ -58,20 +57,16 @@ export default ({ canvasCtx, CANVAS_HEIGHT, CANVAS_WIDTH }: Params) => {
 			canvasCtx.fillStyle = "black";
 			canvasCtx.fillRect(x, y, 3, 3);
 
-			const angle: number = Math.random() * Math.PI * 2;
-
-			particles[idx].x = x + Math.cos(angle);
-			particles[idx].y = y + Math.sin(angle);
-
-			if (
-				particles[idx].x > CANVAS_WIDTH ||
-				particles[idx].y > CANVAS_HEIGHT ||
-				particles[idx].x < 0 ||
-				particles[idx].y < 0
-			) {
-				particles[idx].x = Math.random() * CANVAS_WIDTH;
-				particles[idx].y = Math.random() * CANVAS_HEIGHT;
+			if (particles[idx].x > CANVAS_WIDTH || particles[idx].x < 0) {
+				particles[idx].angle = Math.PI - particles[idx].angle;
 			}
+
+			if (particles[idx].y > CANVAS_HEIGHT || particles[idx].y < 0) {
+				particles[idx].angle = -particles[idx].angle;
+			}
+
+			particles[idx].x = x + Math.cos(particles[idx].angle);
+			particles[idx].y = y + Math.sin(particles[idx].angle);
 		});
 	};
 
