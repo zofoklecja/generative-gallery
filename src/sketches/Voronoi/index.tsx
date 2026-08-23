@@ -3,7 +3,6 @@ import draw from "./sketch.ts";
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../constants.ts";
 
 function Voronoi() {
-	const paramsRef = useRef({});
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	useEffect(() => {
@@ -13,7 +12,6 @@ function Voronoi() {
 		const canvasCtx = canvasRef.current.getContext("2d");
 		const { start, stop } = draw({
 			canvasCtx,
-			paramsRef,
 			CANVAS_HEIGHT,
 			CANVAS_WIDTH,
 		});

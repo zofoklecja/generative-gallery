@@ -1,8 +1,5 @@
-type VoronoiParams = {};
-
 type Params = {
 	canvasCtx: CanvasRenderingContext2D | null;
-	paramsRef: React.RefObject<VoronoiParams>;
 	CANVAS_HEIGHT: number;
 	CANVAS_WIDTH: number;
 };
