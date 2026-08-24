@@ -1,24 +1,38 @@
+import type { Position } from "./types";
+
 type Params = {
 	canvasCtx: CanvasRenderingContext2D | null;
+	mouseRef: React.RefObject<Position | null>;
 	CANVAS_HEIGHT: number;
 	CANVAS_WIDTH: number;
 };
 
 const MAX_RGB = 256;
+const REPEL_RADIUS = 10;
+const REPEL_FORCE = 1;
 
-export default ({ canvasCtx, CANVAS_HEIGHT, CANVAS_WIDTH }: Params) => {
+export default ({
+	canvasCtx,
+	mouseRef,
+	CANVAS_HEIGHT,
+	CANVAS_WIDTH,
+}: Params) => {
 	let drawRequestId = 0;
 
-	const particles = Array.from({ length: 20 }, () => ({
-		x: Math.random() * CANVAS_WIDTH,
-		y: Math.random() * CANVAS_HEIGHT,
-		angle: Math.random() * Math.PI * 2,
-		color: {
-			r: Math.floor(Math.random() * MAX_RGB),
-			g: Math.floor(Math.random() * MAX_RGB),
-			b: Math.floor(Math.random() * MAX_RGB),
-		},
-	}));
+	const particles = Array.from({ length: 20 }, () => {
+		const angle = Math.random() * Math.PI * 2;
+		return {
+			x: Math.random() * CANVAS_WIDTH,
+			y: Math.random() * CANVAS_HEIGHT,
+			vx: Math.cos(angle),
+			vy: Math.sin(angle),
+			color: {
+				r: Math.floor(Math.random() * MAX_RGB),
+				g: Math.floor(Math.random() * MAX_RGB),
+				b: Math.floor(Math.random() * MAX_RGB),
+			},
+		};
+	});
 
 	if (!canvasCtx) {
 		return { start: () => {}, stop: () => {} };
@@ -50,20 +64,31 @@ export default ({ canvasCtx, CANVAS_HEIGHT, CANVAS_WIDTH }: Params) => {
 		}
 		canvasCtx.putImageData(imageData, 0, 0);
 
-		particles.forEach(({ x, y }, idx) => {
+		particles.forEach((_particle, idx) => {
 			canvasCtx.fillStyle = "black";
-			canvasCtx.fillRect(x, y, 3, 3);
+			canvasCtx.fillRect(particles[idx].x, particles[idx].y, 3, 3);
 
-			if (particles[idx].x > CANVAS_WIDTH || particles[idx].x < 0) {
-				particles[idx].angle = Math.PI - particles[idx].angle;
+			if (particles[idx].x >= CANVAS_WIDTH || particles[idx].x < 0) {
+				particles[idx].vx *= -1;
 			}
 
-			if (particles[idx].y > CANVAS_HEIGHT || particles[idx].y < 0) {
-				particles[idx].angle = -particles[idx].angle;
+			if (particles[idx].y >= CANVAS_HEIGHT || particles[idx].y < 0) {
+				particles[idx].vy *= -1;
 			}
 
-			particles[idx].x = x + Math.cos(particles[idx].angle);
-			particles[idx].y = y + Math.sin(particles[idx].angle);
+			if (mouseRef.current) {
+				const dx = particles[idx].x - mouseRef.current.x;
+				const dy = particles[idx].y - mouseRef.current.y;
+				const dist = Math.sqrt(dx ** 2 + dy ** 2);
+
+				if (dist < REPEL_RADIUS) {
+					particles[idx].vx += (dx / dist) * REPEL_FORCE;
+					particles[idx].vy += (dy / dist) * REPEL_FORCE;
+				}
+			}
+
+			particles[idx].x += particles[idx].vx;
+			particles[idx].y += particles[idx].vy;
 		});
 	};
 
