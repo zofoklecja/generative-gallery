@@ -1,7 +1,13 @@
 import type { Position } from "./types";
 
+type VoronoiParams = {
+	velocity: number;
+	particleNumber: number;
+};
+
 type Params = {
 	canvasCtx: CanvasRenderingContext2D | null;
+	paramsRef: React.RefObject<VoronoiParams>;
 	mouseRef: React.RefObject<Position | null>;
 	CANVAS_HEIGHT: number;
 	CANVAS_WIDTH: number;
@@ -13,29 +19,33 @@ const REPEL_FORCE = 1;
 
 export default ({
 	canvasCtx,
+	paramsRef,
 	mouseRef,
 	CANVAS_HEIGHT,
 	CANVAS_WIDTH,
 }: Params) => {
 	let drawRequestId = 0;
 
-	const particles = Array.from({ length: 20 }, () => {
-		const angle = Math.random() * Math.PI * 2;
-		return {
-			x: Math.random() * CANVAS_WIDTH,
-			y: Math.random() * CANVAS_HEIGHT,
-			vx: Math.cos(angle),
-			vy: Math.sin(angle),
-			color: {
-				r: Math.floor(Math.random() * MAX_RGB),
-				g: Math.floor(Math.random() * MAX_RGB),
-				b: Math.floor(Math.random() * MAX_RGB),
-			},
-		};
-	});
+	let particles = Array.from(
+		{ length: paramsRef.current.particleNumber },
+		() => {
+			const angle = Math.random() * Math.PI * 2;
+			return {
+				x: Math.random() * CANVAS_WIDTH,
+				y: Math.random() * CANVAS_HEIGHT,
+				vx: Math.cos(angle),
+				vy: Math.sin(angle),
+				color: {
+					r: Math.floor(Math.random() * MAX_RGB),
+					g: Math.floor(Math.random() * MAX_RGB),
+					b: Math.floor(Math.random() * MAX_RGB),
+				},
+			};
+		},
+	);
 
 	if (!canvasCtx) {
-		return { start: () => {}, stop: () => {} };
+		return { start: () => {}, stop: () => {}, restart: () => {} };
 	}
 
 	const imageData = canvasCtx.createImageData(CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -87,10 +97,34 @@ export default ({
 				}
 			}
 
-			particles[idx].x += particles[idx].vx;
-			particles[idx].y += particles[idx].vy;
+			particles[idx].x += particles[idx].vx * paramsRef.current.velocity;
+			particles[idx].y += particles[idx].vy * paramsRef.current.velocity;
 		});
 	};
 
-	return { start: draw, stop: () => cancelAnimationFrame(drawRequestId) };
+	const restart = () => {
+		particles = Array.from(
+			{ length: paramsRef.current.particleNumber },
+			() => {
+				const angle = Math.random() * Math.PI * 2;
+				return {
+					x: Math.random() * CANVAS_WIDTH,
+					y: Math.random() * CANVAS_HEIGHT,
+					vx: Math.cos(angle),
+					vy: Math.sin(angle),
+					color: {
+						r: Math.floor(Math.random() * MAX_RGB),
+						g: Math.floor(Math.random() * MAX_RGB),
+						b: Math.floor(Math.random() * MAX_RGB),
+					},
+				};
+			},
+		);
+	};
+
+	return {
+		start: draw,
+		stop: () => cancelAnimationFrame(drawRequestId),
+		restart,
+	};
 };
